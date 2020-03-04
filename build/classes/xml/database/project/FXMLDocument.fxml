@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.effect.Blend?>
+<?import javafx.scene.effect.Lighting?>
+<?import javafx.scene.effect.Shadow?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="895.0" prefWidth="1161.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xml.database.project.FXMLDocumentController">
+    <tabs>
+        <Tab text="Preprocess">
+            <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="850.0" prefWidth="1166.0" stylesheets="@styles.css">
+                    <children>
+                        <TitledPane animated="false" collapsible="false" layoutX="7.0" layoutY="122.0" prefHeight="130.0" prefWidth="1148.0" text="Upload XML Database">
+                            <content>
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="114.0" prefWidth="870.0">
+                                    <children>
+                                        <Button fx:id="Browsebtn1" layoutX="14.0" layoutY="18.0" mnemonicParsing="false" onAction="#UploadDatabase" prefHeight="55.0" prefWidth="122.0" text="BROWSE">
+                                            <font>
+                                                <Font name="System Bold" size="22.0" />
+                                            </font>
+                                        </Button>
+                                        <TextField fx:id="path1" layoutX="171.0" layoutY="19.0" prefHeight="54.0" prefWidth="901.0" />
+                                        <CheckBox fx:id="check1" disable="true" layoutX="1094.0" layoutY="34.0" mnemonicParsing="false" style="-fx-opacity: 1;">
+                              
+                                            <effect>
+                                                <Blend />
+                                            </effect>
+                                        </CheckBox>
+                                    </children>
+                                </AnchorPane>
+                            </content>
+                            <font>
+                                <Font name="System Bold" size="16.0" />
+                            </font>
+                        </TitledPane>
+                        <TitledPane animated="false" collapsible="false" layoutX="7.0" layoutY="265.0" prefHeight="130.0" prefWidth="1148.0" text="Output Folder">
+                            <content>
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="114.0" prefWidth="870.0">
+                                    <children>
+                                        <Button fx:id="Browsebtn2" layoutX="14.0" layoutY="18.0" mnemonicParsing="false" onAction="#Outputfolder" prefHeight="55.0" prefWidth="122.0" text="BROWSE">
+                                            <font>
+                                                <Font name="System Bold" size="22.0" />
+                                            </font>
+                                        </Button>
+                                        <TextField fx:id="path2" layoutX="171.0" layoutY="19.0" prefHeight="54.0" prefWidth="901.0" />
+                                        <CheckBox fx:id="check2" disable="true" layoutX="1095.0" layoutY="34.0" mnemonicParsing="false" style="-fx-opacity: 1;">
+                                            <effect>
+                                                <Lighting diffuseConstant="2.0" light="$null" specularConstant="2.0" specularExponent="40.0" surfaceScale="0.0">
+                                                    <bumpInput>
+                                                        <Shadow />
+                                                    </bumpInput>
+                                                </Lighting>
+                                            </effect>
+                                            <cursor>
+                                                <Cursor fx:constant="NONE" />
+                                            </cursor>
+                                        </CheckBox>
+                                    </children>
+                                </AnchorPane>
+                            </content>
+                            <font>
+                                <Font name="System Bold" size="16.0" />
+                            </font>
+                        </TitledPane>
+                        <ToolBar depthTest="ENABLE" layoutX="7.0" layoutY="14.0" pickOnBounds="false" prefHeight="98.0" prefWidth="1148.0" style="-fx-border-color: BLACK;">
+                            <cursor>
+                                <Cursor fx:constant="DEFAULT" />
+                            </cursor>
+                            <items>
+                                <HBox alignment="CENTER" prefHeight="86.0" prefWidth="1123.0">
+                                    <children>
+                                        <Label alignment="CENTER" prefHeight="86.0" prefWidth="934.0" text="XML DATABASE SYSTEM" wrapText="true">
+                                            <font>
+                                                <Font name="Tahoma Bold" size="51.0" />
+                                            </font>
+                                        </Label>
+                                    </children>
+                                </HBox>
+                            </items>
+                        </ToolBar>
+                        <TitledPane animated="false" collapsible="false" layoutX="588.0" layoutY="402.0" prefHeight="322.0" prefWidth="568.0" text="Details">
+                            <content>
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="252.0" prefWidth="506.0">
+                                    <children>
+                                        <Label fx:id="d1" layoutX="12.0" layoutY="17.0" prefHeight="42.0" prefWidth="373.0" text="Number of elements : 0">
+                                            <font>
+                                                <Font size="22.0" />
+                                            </font>
+                                        </Label>
+                                        <Label fx:id="d2" layoutX="12.0" layoutY="68.0" prefHeight="42.0" prefWidth="373.0" text="Number of attributes : 0">
+                                            <font>
+                                                <Font size="22.0" />
+                                            </font>
+                                        </Label>
+                                        <Label fx:id="d3" layoutX="12.0" layoutY="121.0" prefHeight="42.0" prefWidth="373.0" text="Number of inverted list : 0">
+                                            <font>
+                                                <Font size="22.0" />
+                                            </font>
+                                        </Label>
+                                        <Label fx:id="d4" layoutX="12.0" layoutY="178.0" prefHeight="42.0" prefWidth="373.0" text="Number of internal nodes  : 0">
+                                            <font>
+                                                <Font size="22.0" />
+                                            </font>
+                                        </Label>
+                                        <Label fx:id="d5" layoutX="14.0" layoutY="233.0" prefHeight="42.0" prefWidth="373.0" text="Number of leaf nodes : 0">
+                                            <font>
+                                                <Font size="22.0" />
+                                            </font>
+                                        </Label>
+                                    </children>
+                                </AnchorPane>
+                            </content>
+                            <font>
+                                <Font name="System Bold" size="16.0" />
+                            </font>
+                        </TitledPane>
+                        <TitledPane animated="false" collapsible="false" layoutX="9.0" layoutY="731.0" prefHeight="119.0" prefWidth="560.0" text="Action">
+                            <content>
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="290.0" prefWidth="506.0">
+                                    <children>
+                                        <Button layoutX="51.0" layoutY="11.0" mnemonicParsing="false" onAction="#StartTheProgram" prefHeight="58.0" prefWidth="154.0" text="START">
+                                            <font>
+                                                <Font name="System Bold" size="22.0" />
+                                            </font>
+                                        </Button>
+                                        <Button layoutX="327.0" layoutY="11.0" mnemonicParsing="false" prefHeight="58.0" prefWidth="154.0" text="STOP">
+                                            <font>
+                                                <Font name="System Bold" size="22.0" />
+                                            </font>
+                                        </Button>
+                                    </children>
+                                </AnchorPane>
+                            </content>
+                            <font>
+                                <Font name="System Bold" size="16.0" />
+                            </font>
+                        </TitledPane>
+                        <TitledPane animated="false" collapsible="false" layoutX="588.0" layoutY="731.0" prefHeight="119.0" prefWidth="568.0" text="Status">
+                            <content>
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="66.0" prefWidth="566.0">
+                                    <children>
+                                        <Label fx:id="time" layoutX="14.0" layoutY="19.0" prefHeight="42.0" prefWidth="547.0" text="Execution time is :">
+                                            <font>
+                                                <Font size="22.0" />
+                                            </font>
+                                        </Label>
+                                    </children>
+                                </AnchorPane>
+                            </content>
+                            <font>
+                                <Font name="System Bold" size="16.0" />
+                            </font>
+                        </TitledPane>
+                  <TitledPane animated="false" collapsible="false" layoutX="9.0" layoutY="402.0" prefHeight="322.0" prefWidth="559.0" text="Details">
+                     <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="252.0" prefWidth="506.0">
+                           <children>
+                              <Label fx:id="d11" layoutX="12.0" layoutY="17.0" prefHeight="42.0" prefWidth="373.0" text="Number of elements : 0">
+                                 <font>
+                                    <Font size="22.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="d21" layoutX="12.0" layoutY="68.0" prefHeight="42.0" prefWidth="373.0" text="Number of attributes : 0">
+                                 <font>
+                                    <Font size="22.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="d31" layoutX="12.0" layoutY="121.0" prefHeight="42.0" prefWidth="373.0" text="Number of inverted list : 0">
+                                 <font>
+                                    <Font size="22.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="d41" layoutX="12.0" layoutY="178.0" prefHeight="42.0" prefWidth="373.0" text="Number of internal node  : 0">
+                                 <font>
+                                    <Font size="22.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="d51" layoutX="14.0" layoutY="233.0" prefHeight="42.0" prefWidth="373.0" text="Number of leaf node : 0">
+                                 <font>
+                                    <Font size="22.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </AnchorPane>
+                     </content>
+                     <font>
+                        <Font name="System Bold" size="16.0" />
+                     </font>
+                  </TitledPane>
+                    </children>
+                </AnchorPane>
+            </content>
+        </Tab>
+        <Tab fx:id="StatisticsTab" disable="true" text="Statistics">
+            <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <TabPane prefHeight="859.0" prefWidth="1174.0" tabClosingPolicy="UNAVAILABLE">
+                    <tabs>
+                      <Tab fx:id="barchartTab" text="Bar Chart">
+                        <content>
+                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="824.0" prefWidth="1161.0" />
+                        </content>
+                      </Tab>
+                      <Tab text="Pie Chart">
+                        <content>
+                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                 <children>
+                                    <PieChart fx:id="piechart" prefHeight="824.0" prefWidth="1161.0" />
+                                 </children></AnchorPane>
+                        </content>
+                      </Tab>
+                        <Tab text="Unique Nodes">
+                          <content>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                 <children>
+                                    <TextArea fx:id="uniqueNodeText" editable="false" focusTraversable="false" prefHeight="824.0" prefWidth="1173.0">
+                                       <font>
+                                          <Font name="System Bold" size="24.0" />
+                                       </font>
+                                    </TextArea>
+                                 </children>
+                              </AnchorPane>
+                          </content>
+                        </Tab>
+                        <Tab text="Unique Paths">
+                           <content>
+                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                 <children>
+                                    <TextArea fx:id="uniquePathText" editable="false" focusTraversable="false" prefHeight="824.0" prefWidth="1173.0">
+                                       <font>
+                                          <Font name="System Bold" size="24.0" />
+                                       </font>
+                                    </TextArea>
+                                 </children>
+                              </AnchorPane>
+                           </content>
+                        </Tab>
+                    </tabs>
+                  </TabPane>
+               </children></AnchorPane>
+            </content>
+        </Tab>
+      <Tab fx:id="Querytab" disable="true" text="Query">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <TitledPane animated="false" collapsible="false" layoutX="7.0" layoutY="14.0" prefHeight="266.0" prefWidth="1147.0" text="Query">
+                     <font>
+                        <Font name="System Bold" size="16.0" />
+                     </font>
+                     <content>
+                        <TextArea fx:id="queryArea" prefHeight="200.0" prefWidth="200.0">
+                           <font>
+                              <Font name="System Bold" size="24.0" />
+                           </font>
+                        </TextArea>
+                     </content>
+                  </TitledPane>
+                  <TitledPane animated="false" collapsible="false" layoutX="7.0" layoutY="300.0" prefHeight="484.0" prefWidth="1147.0" text="Result">
+                     <font>
+                        <Font name="System Bold" size="16.0" />
+                     </font>
+                     <content>
+                        <TextArea fx:id="resultArea" editable="false" prefHeight="200.0" prefWidth="200.0">
+                           <font>
+                              <Font name="System Bold" size="24.0" />
+                           </font>
+                        </TextArea>
+                     </content>
+                  </TitledPane>
+                  <ToolBar layoutX="7.0" layoutY="796.0" prefHeight="62.0" prefWidth="1147.0">
+                     <items>
+                        <Pane prefHeight="51.0" prefWidth="1131.0">
+                           <children>
+                              <Button fx:id="queryRunBtn" layoutX="1074.0" layoutY="8.0" mnemonicParsing="false" onAction="#queryRunMethod" text="RUN">
+                                 <font>
+                                    <Font name="System Bold" size="16.0" />
+                                 </font>
+                              </Button>
+                              <Button layoutX="1000.0" layoutY="8.0" mnemonicParsing="false" text="STOP">
+                                 <font>
+                                    <Font name="System Bold" size="16.0" />
+                                 </font>
+                              </Button>
+                           </children>
+                        </Pane>
+                     </items>
+                  </ToolBar>
+               </children></AnchorPane>
+        </content>
+      </Tab>
+    </tabs>
+</TabPane>

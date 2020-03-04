@@ -1,0 +1,10 @@
+.root{
+
+}
+.browse-btn{
+    margin-left: 15px;
+}
+.hbox{
+    -fx-border-color: black;
+    -fx-border-width: 2px;
+}
