@@ -7,7 +7,6 @@ package Main;
 
 import DataBase.DataBaseManger;
 import Models.NodeCounter;
-import Models.NodeMoodel;
 import Parsing.IntervalLabelling;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -19,8 +18,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -29,29 +26,19 @@ import javafx.embed.swing.SwingNode;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.chart.BarChart;
 import javafx.scene.chart.PieChart;
-import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.text.Font;
-import javafx.scene.web.WebView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.StageStyle;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.xml.parsers.SAXParser;
@@ -63,7 +50,6 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartFrame;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.CategoryPlot;
@@ -130,8 +116,7 @@ public class FXMLDocumentController implements Initializable {
     @FXML
     private ProgressIndicator p;
 
-    public static String DatabasePath = "C:\\Users\\SAlbr\\Desktop\\books.xml";
-    public static File DatabaseFile;
+    public static String DatabasePath = "C:\\Users\\SAlbr\\Desktop\\nysk.xml";
     public static String AnswerPath = "C:\\Users\\SAlbr\\Desktop\\res";
     public Document Uniquedoc;
     public ArrayList<String> UniPaths;
@@ -142,7 +127,6 @@ public class FXMLDocumentController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         path1.setEditable(false);
         path2.setEditable(false);
-        p.setVisible(false);
 
     }
 
@@ -155,7 +139,7 @@ public class FXMLDocumentController implements Initializable {
         fileChooser.getExtensionFilters().add(extFilter);
         File selectedFile = fileChooser.showOpenDialog(XMLDatabaseProject.getStage());
         if (selectedFile != null) {
-            DatabaseFile = selectedFile;
+
             DatabasePath = selectedFile.getAbsolutePath();
             path1.setText(DatabasePath);
             check1.setDisable(false);
@@ -182,14 +166,15 @@ public class FXMLDocumentController implements Initializable {
 
     }
 
+    Task<Void> task;
+
     @FXML
     public void startProggres(ActionEvent event) {
-        Task<Void> task = new Task<Void>() {
+        p.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
+        task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
-                p.setVisible(true);
 
-                p.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
                 startTheProgram();
                 return null;
 
@@ -203,6 +188,7 @@ public class FXMLDocumentController implements Initializable {
 
             @Override
             protected void failed() {
+                task.cancel();
             }
         };
 
@@ -221,12 +207,10 @@ public class FXMLDocumentController implements Initializable {
 
             sAXParser.parse(DatabasePath, handler);
             uniqueNode = handler.uniqueNode;
-            FatherCheck = handler.FatherCheck;
             long end = System.currentTimeMillis();
             NumberFormat formatter = new DecimalFormat("#0.00000");
             Platform.runLater(
                     () -> {
-                        // Update UI here.
 
                         time.setText("Execution time is : " + formatter.format((end - start) / 1000d) + " seconds ");
 
@@ -389,7 +373,10 @@ public class FXMLDocumentController implements Initializable {
 
     @FXML
     void stopTheProgram(ActionEvent event) {
-
+        p.setProgress(0);
+        StatisticsTab.setDisable(true);
+        Querytab.setDisable(true);
+        task.cancel();
     }
 
 }

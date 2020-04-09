@@ -32,7 +32,7 @@ public class DataBaseManger {
         try {
             Class.forName("org.h2.Driver");
 
-            // con = DriverManager.getConnection("jdbc:h2:~/" + FXMLDocumentController.DatabaseFile.getName().substring(0, FXMLDocumentController.DatabaseFile.getName().length() - 4), "admin", "admin");
+            // con = DriverManager.getConnection("jdbc:h2:~/" + FXMLDocumentController.DatabasePath.substring(0, FXMLDocumentController.DatabasePath.length() - 4), "admin", "admin");
             con = DriverManager.getConnection("jdbc:h2:~/booksDB", "admin", "admin");
 
             st = con.createStatement();
@@ -48,23 +48,26 @@ public class DataBaseManger {
             String sql = " DROP TABLE IF EXISTS `" + TableName + "`;"
                     + " create table `" + TableName + "` ("
                     + " id int NOT NULL AUTO_INCREMENT,"
-                    + " label varchar(255) ,"
-                    + " value  longtext ,"
+                    + " start int ,"
+                    + " end int ,"
+                    + " level int ,"
                     + " pathID int ,"
-                    + " father varchar(255) )";
+                    + "value  longtext)";
+
             st.execute(sql);
         } catch (SQLException ex) {
             Logger.getLogger(DataBaseManger.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    public void insertData(String TableName, String Lable, String value, int pathID, String father) {
+    public void insertData(String TableName, String start, String end, String level, String value, int pathID) {
         try {
             while (value.contains("'")) {
                 value = value.replace("'", "");
             }
 
-            String sql = "insert into `" + TableName + "` (label,value,pathID,father) Values ('" + Lable + "','" + value + "','" + pathID + "','" + father + " ')";
+            String sql = "insert into `" + TableName + "` (start,end,level,pathID,value) "
+                    + "Values ('" + start + "','" + end + "','" + level + "','" + pathID + "','" + value + " ')";
 
             st.execute(sql);
         } catch (SQLException ex) {

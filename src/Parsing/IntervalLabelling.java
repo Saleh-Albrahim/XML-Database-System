@@ -62,14 +62,13 @@ public class IntervalLabelling extends DefaultHandler {
     public DataBaseManger dataBaseManger = new DataBaseManger();
     public int totalElement = 0;
     public int totalatt = 0;
-    public HashSet<String> FatherCheck = new HashSet<>();
+
     public ArrayList<String> uniqueNode = new ArrayList<>();
     public Stack<Long> childStack = new Stack<Long>(); //to follow element's child count
     public Stack<Integer> OrderStack = new Stack<Integer>(); // element's doc order num
     public Stack<Integer> LevelStack = new Stack<Integer>(); //hold level of element
     public ArrayList<String> UniPaths = new ArrayList();
-    public ArrayList<String> FatherList = new ArrayList<>();
-    public ArrayList<String> FatherList2 = new ArrayList<>();
+
     public Stack<Integer> flags = new Stack<Integer>(); //hold level of element
     public Stack<String> E = new Stack<String>();
     public int leaf = 0;
@@ -136,8 +135,7 @@ public class IntervalLabelling extends DefaultHandler {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
             doc = docBuilder.newDocument();
-            FatherList.add("root");
-            FatherList2.add("root");
+
         } catch (Exception e) {
 
         }
@@ -251,7 +249,6 @@ public class IntervalLabelling extends DefaultHandler {
     public void startElement(String uri, String localName, String qName,
             Attributes attributes) throws SAXException {
 
-        addFather(qName);
         addNewNode(qName);
 
         if (attributes.getLength() > 0) {
@@ -390,7 +387,7 @@ public class IntervalLabelling extends DefaultHandler {
 
     public void endElement(String uri, String localName,
             String qName) throws SAXException {
-        FatherList.remove(FatherList.size() - 1);
+
         String record;
         String path = "";
         for (int i = 0; i < elementStack.size(); i++) {
@@ -402,7 +399,7 @@ public class IntervalLabelling extends DefaultHandler {
 
         }
         //  add new unique nodes
-        int classnumber = UniPaths.indexOf(path);
+        int pathID = UniPaths.indexOf(path);
 
         boolean hasAtt = (!E.isEmpty()) && qName.equals(E.peek()) && LevelStack.peek() == flags.peek();
         record = qName + "," + OrderStack.peek();
@@ -446,8 +443,7 @@ public class IntervalLabelling extends DefaultHandler {
                 out.get(2).write(txtLabel[1] + comma + txtLabel[2] + comma + txtLabel[3] + ":" + v);
                 out.get(2).newLine();
                 mapValue.put(OrderStack.peek(), txtLabel[1] + comma + txtLabel[2] + comma + txtLabel[3] + comma + v);
-                FatherCheck.add(FatherList.get(FatherList.size() - 1));
-                dataBaseManger.insertData(qName, txtLabel[1] + comma + txtLabel[2] + comma + txtLabel[3], v, classnumber, FatherList.get(FatherList.size() - 1));
+                dataBaseManger.insertData(qName, txtLabel[1], txtLabel[2], txtLabel[3], v, pathID);
                 values.clear();
             } catch (IOException e) {
                 // TODO Auto-generated catch block
@@ -456,7 +452,7 @@ public class IntervalLabelling extends DefaultHandler {
 
         } else {
 
-            dataBaseManger.insertData(qName, txtLabel[1] + comma + txtLabel[2] + comma + txtLabel[3], "", classnumber, FatherList.get(FatherList.size() - 1));
+            dataBaseManger.insertData(qName, txtLabel[1], txtLabel[2], txtLabel[3], "", pathID);
         }
 
         elementStack.pop();
@@ -501,23 +497,6 @@ public class IntervalLabelling extends DefaultHandler {
     public void assignToStack(Stack<Integer> temp) {
         for (int i = PrimeList.size() - 1; i >= 0; i--) {
             temp.push(PrimeList.get(i));
-        }
-    }
-
-    private void addFather(String qName) {
-        if (!FatherList2.contains(qName + 1)) {
-            FatherList.add(qName + 1);
-            FatherList2.add(qName + 1);
-        } else {
-            for (int j = 2; j <= FatherList2.size(); j++) {
-                if (!FatherList2.contains(qName + j)) {
-                    FatherList.add(qName + j);
-                    FatherList2.add(qName + j);
-                    break;
-                }
-
-            }
-
         }
     }
 

@@ -172,7 +172,7 @@
                      <content>
                         <AnchorPane fx:id="porggraesTab" minHeight="0.0" minWidth="0.0" prefHeight="252.0" prefWidth="506.0">
                            <children>
-                              <ProgressIndicator fx:id="p" layoutX="107.0" layoutY="54.0" minHeight="176.0" minWidth="169.0" prefHeight="176.0" prefWidth="169.0" />
+                              <ProgressIndicator fx:id="p" layoutX="107.0" layoutY="54.0" minHeight="176.0" minWidth="169.0" prefHeight="176.0" prefWidth="169.0" progress="0.0" />
                            </children>
                         </AnchorPane>
                      </content>
