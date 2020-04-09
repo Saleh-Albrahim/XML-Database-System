@@ -2,7 +2,7 @@ package Parsing;
 
 import DataBase.DataBaseManger;
 
-import Models.Node;
+import Models.NodeCounter;
 import com.sun.org.apache.xml.internal.serializer.OutputPropertiesFactory;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -36,7 +36,10 @@ import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-import xml.database.project.FXMLDocumentController;
+import Main.FXMLDocumentController;
+import java.util.Arrays;
+import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 
 // labelling XML nodes using interval encoding scheme
 public class IntervalLabelling extends DefaultHandler {
@@ -48,7 +51,7 @@ public class IntervalLabelling extends DefaultHandler {
     public String xmlString;
     //public FileWriter fstream2;
     public ArrayList<BufferedWriter> out = new ArrayList<BufferedWriter>();
-    public ArrayList<Models.Node> nodeCount = new ArrayList<>();
+    public ArrayList<Models.NodeCounter> nodeCount = new ArrayList<>();
     BufferedWriter[] partitioning;
     Map<Integer, String> map = new TreeMap<Integer, String>();
 
@@ -56,14 +59,17 @@ public class IntervalLabelling extends DefaultHandler {
     Map<Integer, String> mapValueAtt = new TreeMap<Integer, String>();
     public Hashtable<String, Integer> tags = new Hashtable<String, Integer>();
     public Hashtable<String, Integer> tagsAttribute = new Hashtable<String, Integer>();
-    DataBaseManger dataBaseManger = new DataBaseManger();
+    public DataBaseManger dataBaseManger = new DataBaseManger();
     public int totalElement = 0;
     public int totalatt = 0;
+    public HashSet<String> FatherCheck = new HashSet<>();
     public ArrayList<String> uniqueNode = new ArrayList<>();
     public Stack<Long> childStack = new Stack<Long>(); //to follow element's child count
     public Stack<Integer> OrderStack = new Stack<Integer>(); // element's doc order num
     public Stack<Integer> LevelStack = new Stack<Integer>(); //hold level of element
-    public TreeSet UniSet = new TreeSet();
+    public ArrayList<String> UniPaths = new ArrayList();
+    public ArrayList<String> FatherList = new ArrayList<>();
+    public ArrayList<String> FatherList2 = new ArrayList<>();
     public Stack<Integer> flags = new Stack<Integer>(); //hold level of element
     public Stack<String> E = new Stack<String>();
     public int leaf = 0;
@@ -130,6 +136,8 @@ public class IntervalLabelling extends DefaultHandler {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
             doc = docBuilder.newDocument();
+            FatherList.add("root");
+            FatherList2.add("root");
         } catch (Exception e) {
 
         }
@@ -226,7 +234,6 @@ public class IntervalLabelling extends DefaultHandler {
             }
             dataBaseManger.st.close();
             dataBaseManger.con.close();
-            dataBaseManger.st2.close();
 
             detali[0] = totalElement;
             detali[1] = totalatt;
@@ -244,22 +251,13 @@ public class IntervalLabelling extends DefaultHandler {
     public void startElement(String uri, String localName, String qName,
             Attributes attributes) throws SAXException {
 
-        if (!uniqueNode.contains(qName)) {
-            uniqueNode.add(qName);
-            nodeCount.add(new Node(qName));
-            dataBaseManger.createTables(qName);
-        } else {
-            for (int j = 0; j < nodeCount.size(); j++) {
-                if (nodeCount.get(j).getName().equals(qName)) {
-                    nodeCount.get(j).Addone();
-                    break;
-                }
-            }
-        }
+        addFather(qName);
+        addNewNode(qName);
+
         if (attributes.getLength() > 0) {
             if (!uniqueNode.contains(attributes.getQName(0))) {
                 uniqueNode.add(attributes.getQName(0));
-                nodeCount.add(new Node(attributes.getQName(0)));
+                nodeCount.add(new NodeCounter(attributes.getQName(0)));
                 dataBaseManger.createTables(attributes.getQName(0));
             } else {
                 for (int j = 0; j < nodeCount.size(); j++) {
@@ -367,16 +365,16 @@ public class IntervalLabelling extends DefaultHandler {
         String path = "";
         for (int i = 0; i < elementStack.size(); i++) {
             if (i < elementStack.size() - 1) {
-                path = path + elementStack.get(i) + " // ";
+                path = path + elementStack.get(i) + "/";
             } else {
                 path = path + elementStack.get(i);
             }
 
         }
         //  add new unique nodes
-        if (UniSet.add(path)) {
-
-            if (UniSet.size() == 1) {
+        if (!UniPaths.contains(path)) {
+            UniPaths.add(path);
+            if (UniPaths.size() == 1) {
                 Element e = doc.createElement(qName);
                 doc.appendChild(e);
             } else {
@@ -392,7 +390,19 @@ public class IntervalLabelling extends DefaultHandler {
 
     public void endElement(String uri, String localName,
             String qName) throws SAXException {
+        FatherList.remove(FatherList.size() - 1);
         String record;
+        String path = "";
+        for (int i = 0; i < elementStack.size(); i++) {
+            if (i < elementStack.size() - 1) {
+                path = path + elementStack.get(i) + "/";
+            } else {
+                path = path + elementStack.get(i);
+            }
+
+        }
+        //  add new unique nodes
+        int classnumber = UniPaths.indexOf(path);
 
         boolean hasAtt = (!E.isEmpty()) && qName.equals(E.peek()) && LevelStack.peek() == flags.peek();
         record = qName + "," + OrderStack.peek();
@@ -436,7 +446,8 @@ public class IntervalLabelling extends DefaultHandler {
                 out.get(2).write(txtLabel[1] + comma + txtLabel[2] + comma + txtLabel[3] + ":" + v);
                 out.get(2).newLine();
                 mapValue.put(OrderStack.peek(), txtLabel[1] + comma + txtLabel[2] + comma + txtLabel[3] + comma + v);
-                dataBaseManger.insertData(qName, txtLabel[1] + comma + txtLabel[2] + comma + txtLabel[3], v);
+                FatherCheck.add(FatherList.get(FatherList.size() - 1));
+                dataBaseManger.insertData(qName, txtLabel[1] + comma + txtLabel[2] + comma + txtLabel[3], v, classnumber, FatherList.get(FatherList.size() - 1));
                 values.clear();
             } catch (IOException e) {
                 // TODO Auto-generated catch block
@@ -444,7 +455,8 @@ public class IntervalLabelling extends DefaultHandler {
             }
 
         } else {
-            dataBaseManger.insertData(qName, txtLabel[1] + comma + txtLabel[2] + comma + txtLabel[3], "");
+
+            dataBaseManger.insertData(qName, txtLabel[1] + comma + txtLabel[2] + comma + txtLabel[3], "", classnumber, FatherList.get(FatherList.size() - 1));
         }
 
         elementStack.pop();
@@ -457,24 +469,14 @@ public class IntervalLabelling extends DefaultHandler {
         //ignore white space
         String value = new String(ch, start, length).trim();
 
-        if (value.length() == 0) {
-            return;
-        } else {
+        if (value.length() != 0) {
             values.add(value);
-
         }
 
     }
 
     public String currentElement() {
         return this.elementStack.peek();
-    }
-
-    public String currentElementParent() {
-        if (this.elementStack.size() < 2) {
-            return null;
-        }
-        return this.elementStack.get(this.elementStack.size() - 2);
     }
 
     public void PrimenumberList() {
@@ -498,7 +500,39 @@ public class IntervalLabelling extends DefaultHandler {
 
     public void assignToStack(Stack<Integer> temp) {
         for (int i = PrimeList.size() - 1; i >= 0; i--) {
-            temp.push((Integer) PrimeList.get(i));
+            temp.push(PrimeList.get(i));
+        }
+    }
+
+    private void addFather(String qName) {
+        if (!FatherList2.contains(qName + 1)) {
+            FatherList.add(qName + 1);
+            FatherList2.add(qName + 1);
+        } else {
+            for (int j = 2; j <= FatherList2.size(); j++) {
+                if (!FatherList2.contains(qName + j)) {
+                    FatherList.add(qName + j);
+                    FatherList2.add(qName + j);
+                    break;
+                }
+
+            }
+
+        }
+    }
+
+    private void addNewNode(String qName) {
+        if (!uniqueNode.contains(qName)) {
+            uniqueNode.add(qName);
+            nodeCount.add(new NodeCounter(qName));
+            dataBaseManger.createTables(qName);
+        } else {
+            for (int j = 0; j < nodeCount.size(); j++) {
+                if (nodeCount.get(j).getName().equals(qName)) {
+                    nodeCount.get(j).Addone();
+                    break;
+                }
+            }
         }
     }
 

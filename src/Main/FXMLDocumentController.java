@@ -3,10 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package xml.database.project;
+package Main;
 
 import DataBase.DataBaseManger;
-import Models.Node;
+import Models.NodeCounter;
+import Models.NodeMoodel;
 import Parsing.IntervalLabelling;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -16,11 +17,14 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.embed.swing.SwingNode;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -32,12 +36,18 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.text.Font;
+import javafx.scene.web.WebView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.StageStyle;
@@ -51,6 +61,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+import org.apache.commons.lang3.StringUtils;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartFrame;
 import org.jfree.chart.ChartPanel;
@@ -108,19 +119,30 @@ public class FXMLDocumentController implements Initializable {
     private TextArea queryArea;
 
     @FXML
-    private TextArea resultArea;
+    private ListView<?> resultArea;
+
     @FXML
     private Tab Querytab;
 
-    public static String DatabasePath = "";
+    @FXML
+    private Label quyeytime;
+
+    @FXML
+    private ProgressIndicator p;
+
+    public static String DatabasePath = "C:\\Users\\SAlbr\\Desktop\\books.xml";
     public static File DatabaseFile;
-    public static String AnswerPath = "";
+    public static String AnswerPath = "C:\\Users\\SAlbr\\Desktop\\res";
     public Document Uniquedoc;
+    public ArrayList<String> UniPaths;
+    public ArrayList<String> uniqueNode;
+    public HashSet<String> FatherCheck;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         path1.setEditable(false);
         path2.setEditable(false);
+        p.setVisible(false);
 
     }
 
@@ -161,52 +183,86 @@ public class FXMLDocumentController implements Initializable {
     }
 
     @FXML
-    void StartTheProgram(ActionEvent event) {
+    public void startProggres(ActionEvent event) {
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                p.setVisible(true);
+
+                p.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
+                startTheProgram();
+                return null;
+
+            }
+
+            @Override
+            protected void succeeded() {
+                p.setProgress(100);
+
+            }
+
+            @Override
+            protected void failed() {
+            }
+        };
+
+        Thread thread = new Thread(task);
+        thread.start();
+
+    }
+
+    void startTheProgram() {
         try {
+
             long start = System.currentTimeMillis();
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser sAXParser = factory.newSAXParser();
             IntervalLabelling handler = new IntervalLabelling("IntervalLabelling");
 
             sAXParser.parse(DatabasePath, handler);
+            uniqueNode = handler.uniqueNode;
+            FatherCheck = handler.FatherCheck;
             long end = System.currentTimeMillis();
-
             NumberFormat formatter = new DecimalFormat("#0.00000");
-            time.setText("Execution time is : " + formatter.format((end - start) / 1000d) + " seconds ");
+            Platform.runLater(
+                    () -> {
+                        // Update UI here.
 
-            d1.setText("Number of  elements : " + handler.detali[0]);
-            d2.setText("Numberof  attributes : " + handler.detali[1]);
-            d3.setText("Number of inverted list : " + handler.detali[2]);
-            d4.setText("Number of internal nodes : " + handler.internal);
-            d5.setText("Number of leaf nodes :  " + handler.leaf);
-            Object arr[] = handler.UniSet.toArray();
-            long total = handler.internal + handler.leaf;
-            String[] stringArray = Arrays.copyOf(arr, arr.length, String[].class);
+                        time.setText("Execution time is : " + formatter.format((end - start) / 1000d) + " seconds ");
 
-            String path = "";
+                        d1.setText("Number of  elements : " + handler.detali[0]);
+                        d2.setText("Numberof  attributes : " + handler.detali[1]);
+                        d3.setText("Number of inverted list : " + handler.detali[2]);
+                        d4.setText("Number of internal nodes : " + handler.internal);
+                        d5.setText("Number of leaf nodes :  " + handler.leaf);
 
-            for (int i = 0; i < stringArray.length; i++) {
+                        long total = handler.internal + handler.leaf;
+                        UniPaths = handler.UniPaths;
+                        String allPaths = "";
+                        for (int i = 0; i < UniPaths.size(); i++) {
+                            allPaths = allPaths + UniPaths.get(i) + "\n\n";
+                        }
 
-                path = path + stringArray[i] + "\n\n";
+                        uniquePathText.setText(allPaths);
+                        Uniquedoc = handler.doc;
 
-            }
-            uniquePathText.setText(path);
-            Uniquedoc = handler.doc;
-            ArrayList<Node> count = handler.nodeCount;
-            drawBarchart(count);
-            drawPiechart(count, total);
+                        ArrayList<NodeCounter> count = handler.nodeCount;
+                        drawBarchart(count);
+                        drawPiechart(count, total);
 
-            StatisticsTab.setDisable(false);
-            Querytab.setDisable(false);
-            uniqueNodeText.setText(handler.xmlString);
+                        StatisticsTab.setDisable(false);
+                        Querytab.setDisable(false);
+                        uniqueNodeText.setText(handler.xmlString);
 
+                    }
+            );
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
     }
 
-    private void drawBarchart(ArrayList<Models.Node> nodeCount) {
+    private void drawBarchart(ArrayList<Models.NodeCounter> nodeCount) {
         SwingNode swingNode = new SwingNode();
         SwingUtilities.invokeLater(() -> {
 
@@ -239,7 +295,7 @@ public class FXMLDocumentController implements Initializable {
         barchartTab.setContent(swingNode);
     }
 
-    private void drawPiechart(ArrayList<Node> count, long total) {
+    private void drawPiechart(ArrayList<NodeCounter> count, long total) {
         ObservableList<PieChart.Data> data = FXCollections.observableArrayList();
         for (int i = 0; i < count.size(); i++) {
             data.add(new PieChart.Data(count.get(i).getName(), count.get(i).getNum()));
@@ -259,44 +315,81 @@ public class FXMLDocumentController implements Initializable {
 
     @FXML
     void queryRunMethod(ActionEvent event) {
-        String query = queryArea.getText();
+        long start = System.currentTimeMillis();
+        NumberFormat formatter = new DecimalFormat("#0.00000");
+        String query = queryArea.getText().trim();
+        String[] whereList = null;
         NodeList nodes = XPath(query);
         if (nodes == null) {
-
+            long end = System.currentTimeMillis();
+            quyeytime.setText("Execution time is : " + formatter.format((end - start) / 1000d) + " seconds ");
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.initStyle(StageStyle.UTILITY);
             alert.setTitle("ERROR");
             alert.setHeaderText(null);
             alert.setContentText("ERROR IN THE QUERY");
             alert.showAndWait();
+
             return;
         }
         if (nodes.getLength() == 0) {
+            long end = System.currentTimeMillis();
+            quyeytime.setText("Execution time is : " + formatter.format((end - start) / 1000d) + " seconds ");
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.initStyle(StageStyle.UTILITY);
             alert.setHeaderText(null);
             alert.setTitle("ERROR");
             alert.setContentText("ERROR IN THE SCHEMA");
-
             alert.showAndWait();
+
             return;
         }
-//        DataBase.DataBaseManger db = new DataBaseManger();
-//        db.query(query);
+        if (query.contains("[")) {
+            whereList = StringUtils.substringsBetween(query, "[", "]");
+            for (String toRemove : whereList) {
+                query = StringUtils.remove(query, "[" + toRemove + "]");
+            }
+            System.out.println(Arrays.toString(whereList));
+            System.out.println(query);
 
+        }
+
+        DataBaseManger db = new DataBaseManger();
+        String arr[] = query.split("/");
+        ArrayList<String> res;
+
+        if (whereList != null) {
+            res = db.query(arr[arr.length - 1], UniPaths.indexOf(query), whereList, FatherCheck, uniqueNode);
+        } else {
+            res = db.query(arr[arr.length - 1], UniPaths.indexOf(query));
+        }
+
+        long end = System.currentTimeMillis();
+
+        quyeytime.setText("Execution time is : " + formatter.format((end - start) / 1000d) + " seconds ");
+        ObservableList data = FXCollections.observableArrayList(res);
+        resultArea.setItems(data);
     }
 
     public NodeList XPath(String query) {
         try {
             XPathFactory xPathfactory = XPathFactory.newInstance();
             XPath xpath = xPathfactory.newXPath();
+
             XPathExpression expr = xpath.compile(query);
+
             NodeList nodes = (NodeList) expr.evaluate(Uniquedoc, XPathConstants.NODESET);
+
             return nodes;
         } catch (XPathExpressionException ex) {
 
         }
         return null;
+    }
+
+    @FXML
+    void stopTheProgram(ActionEvent event) {
+
     }
 
 }

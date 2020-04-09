@@ -21,7 +21,7 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-import xml.database.project.FXMLDocumentController;
+import Main.FXMLDocumentController;
 
 // labelling XML nodes using interval encoding scheme
 public class DeweyLabelling extends DefaultHandler {

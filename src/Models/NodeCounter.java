@@ -9,11 +9,11 @@ package Models;
  *
  * @author SAlbr
  */
-public class Node {
+public class NodeCounter {
 
     String name;
 
-    public Node(String qName) {
+    public NodeCounter(String qName) {
         name = qName;
     }
 
