@@ -16,6 +16,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
@@ -116,12 +117,12 @@ public class FXMLDocumentController implements Initializable {
     @FXML
     private ProgressIndicator p;
 
-    public static String DatabasePath = "C:\\Users\\SAlbr\\Desktop\\nysk.xml";
+    public static String DatabasePath = "C:\\Users\\SAlbr\\Desktop\\books.xml";
     public static String AnswerPath = "C:\\Users\\SAlbr\\Desktop\\res";
     public Document Uniquedoc;
     public ArrayList<String> UniPaths;
-    public ArrayList<String> uniqueNode;
-    public HashSet<String> FatherCheck;
+
+    private HashMap<String, String> whereMap;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -206,7 +207,6 @@ public class FXMLDocumentController implements Initializable {
             IntervalLabelling handler = new IntervalLabelling("IntervalLabelling");
 
             sAXParser.parse(DatabasePath, handler);
-            uniqueNode = handler.uniqueNode;
             long end = System.currentTimeMillis();
             NumberFormat formatter = new DecimalFormat("#0.00000");
             Platform.runLater(
@@ -302,8 +302,23 @@ public class FXMLDocumentController implements Initializable {
         long start = System.currentTimeMillis();
         NumberFormat formatter = new DecimalFormat("#0.00000");
         String query = queryArea.getText().trim();
+        String orgQuery = query;
+        String father = "";
         String[] whereList = null;
-        NodeList nodes = XPath(query);
+        if (query.contains("[")) {
+            whereMap = new HashMap<>();
+            father = StringUtils.substringBefore(query, "[");
+            father = StringUtils.substringAfterLast(father, "/");
+            System.out.println(father);
+            whereList = StringUtils.substringsBetween(query, "[", "]");
+            for (String whereString : whereList) {
+                String tag = addToWhereMap(whereString);
+                query = StringUtils.replaceOnce(query, "[" + whereString + "]", "/" + tag + "");
+                orgQuery = StringUtils.remove(orgQuery, "[" + whereString + "]");
+            }
+        }
+
+        NodeList nodes = XPath(orgQuery);
         if (nodes == null) {
             long end = System.currentTimeMillis();
             quyeytime.setText("Execution time is : " + formatter.format((end - start) / 1000d) + " seconds ");
@@ -328,24 +343,14 @@ public class FXMLDocumentController implements Initializable {
 
             return;
         }
-        if (query.contains("[")) {
-            whereList = StringUtils.substringsBetween(query, "[", "]");
-            for (String toRemove : whereList) {
-                query = StringUtils.remove(query, "[" + toRemove + "]");
-            }
-            System.out.println(Arrays.toString(whereList));
-            System.out.println(query);
-
-        }
-
         DataBaseManger db = new DataBaseManger();
         String arr[] = query.split("/");
-        ArrayList<String> res;
+        ArrayList<String> res = null;
 
-        if (whereList != null) {
-            res = db.query(arr[arr.length - 1], UniPaths.indexOf(query), whereList, FatherCheck, uniqueNode);
+        if (whereMap != null) {
+            res = db.query(arr, UniPaths.indexOf(orgQuery), whereMap, father);
         } else {
-            res = db.query(arr[arr.length - 1], UniPaths.indexOf(query));
+            res = db.query(arr, UniPaths.indexOf(query), father);
         }
 
         long end = System.currentTimeMillis();
@@ -374,9 +379,27 @@ public class FXMLDocumentController implements Initializable {
     @FXML
     void stopTheProgram(ActionEvent event) {
         p.setProgress(0);
+        time.setText("Execution Stopped");
         StatisticsTab.setDisable(true);
         Querytab.setDisable(true);
         task.cancel();
+    }
+
+    private String addToWhereMap(String whereString) {
+        String tag = "";
+        String operator = "";
+        for (int i = 0; i < whereString.length(); i++) {
+            if (!Character.isLetter(whereString.charAt(i))) {
+                operator = whereString.substring(i, whereString.length());
+                tag = whereString.substring(0, i);
+                break;
+            }
+
+        }
+        System.out.println("tag : " + tag);
+        System.out.println("operator : " + operator);
+        whereMap.put(tag, operator);
+        return tag;
     }
 
 }
