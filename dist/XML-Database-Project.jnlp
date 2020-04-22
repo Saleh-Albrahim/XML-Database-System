@@ -8,7 +8,7 @@
   </information>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="XML-Database-Project.jar" size="45293" download="eager" />
+    <jar href="XML-Database-Project.jar" size="59361" download="eager" />
     <jar href="lib\commons-lang3-3.4.jar" size="434678" download="eager" />
     <jar href="lib\h2-1.4.186.jar" size="1691016" download="eager" />
     <jar href="lib\jcommon-1.0.23.jar" size="330246" download="eager" />

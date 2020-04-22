@@ -1,5 +1,6 @@
-package Parsing;
+package newpackage;
 
+import Parsing.*;
 import DataBase.DataBaseManger;
 
 import Models.NodeCounter;
@@ -108,23 +109,26 @@ public class IntervalLabelling extends DefaultHandler {
         // place and hold file name for indexing info
         //
         loc = FXMLDocumentController.AnswerPath;
-        //    File dir = new File(loc + File.separator + fileName);
-        //    if (!dir.exists()) {
-        //       dir.mkdir();
-        //  }
+        File dir = new File(loc + File.separator + fileName);
+        if (!dir.exists()) {
+            dir.mkdir();
+        }
 
         //FileOutputStream output = new FileOutputStream(loc+fileName+"_interval.gzip");
         //Writer writer = new OutputStreamWriter(new GZIPOutputStream(output), "UTF-8");
-        //  fstream = new FileWriter(loc + File.separator + "interval.txt"); // element
-        //    out.add(new BufferedWriter(fstream)); // 0 interval
+        fstream = new FileWriter(loc + File.separator + "interval.txt"); // element
+        out.add(new BufferedWriter(fstream)); // 0 interval
+
         //	output = new FileOutputStream(loc+fileName+"_tags.gzip");
         //   writer = new OutputStreamWriter(new GZIPOutputStream(output), "UTF-8");
-        //  fstream = new FileWriter(loc + File.separator + "tags.txt");
-        //   out.add(new BufferedWriter(fstream)); // 1 tags
+        fstream = new FileWriter(loc + File.separator + "tags.txt");
+        out.add(new BufferedWriter(fstream)); // 1 tags
+
         //	 output = new FileOutputStream(loc+fileName+"_values.gzip");
         //	 writer = new OutputStreamWriter(new GZIPOutputStream(output), "UTF-8");
-        //   fstream = new FileWriter(loc + File.separator + "values.txt");
-        //       out.add(new BufferedWriter(fstream)); // 2 text values
+        fstream = new FileWriter(loc + File.separator + "values.txt");
+        out.add(new BufferedWriter(fstream)); // 2 text values
+
     }
 
     public void startDocument() throws SAXException {
@@ -147,33 +151,34 @@ public class IntervalLabelling extends DefaultHandler {
             Hashtable<String, Integer> h = new Hashtable<>();
             Map<Integer, String> fis = new TreeMap<>();
 
-//            for (int i = 0; i < eNames.size(); i++) {
-//                h.put(eNames.get(i), i);
-//                fis.put(i, eNames.get(i));
-//            }
+            for (int i = 0; i < eNames.size(); i++) {
+                h.put(eNames.get(i), i);
+                fis.put(i, eNames.get(i));
+            }
             int j = h.size();;
             // number of elements
-//            for (int i = 0; i < aNames.size(); i++) {
-//                if (!h.containsKey(aNames.get(i))) {
-//                    h.put(aNames.get(i), j);
-//                    fis.put(j, aNames.get(i));
-//                    j++;
-//                }
-//            }
+            for (int i = 0; i < aNames.size(); i++) {
+                if (!h.containsKey(aNames.get(i))) {
+                    h.put(aNames.get(i), j);
+                    fis.put(j, aNames.get(i));
+                    j++;
+                }
+            }
 
-            //   partitioning = new BufferedWriter[h.size()];
+            partitioning = new BufferedWriter[h.size()];
             Set<String> up = new HashSet<String>();
-//            for (int i = 0; i < partitioning.length; i++) {
-            //FileOutputStream output = new FileOutputStream(loc+FileName+"_" + fis.get(i)+".gzip");
-            //Writer writer = new OutputStreamWriter(new GZIPOutputStream(output), "UTF-8");
-            // fstream = new FileWriter(loc + "\\IntervalLabelling\\" + File.separator + fis.get(i) + ".txt");
-            //    partitioning[i] = new BufferedWriter(fstream);
+            for (int i = 0; i < partitioning.length; i++) {
+                //FileOutputStream output = new FileOutputStream(loc+FileName+"_" + fis.get(i)+".gzip");
+                //Writer writer = new OutputStreamWriter(new GZIPOutputStream(output), "UTF-8");
+                fstream = new FileWriter(loc + "\\IntervalLabelling\\" + File.separator + fis.get(i) + ".txt");
+                partitioning[i] = new BufferedWriter(fstream);
 
-//            }
+            }
+
             for (String val : map.values()) {
 
-                //  out.get(0).write(val);
-                //  out.get(0).newLine();
+                out.get(0).write(val);
+                out.get(0).newLine();
                 String[] label = val.split(",");
                 String newlabel = label[1];
 
@@ -182,8 +187,9 @@ public class IntervalLabelling extends DefaultHandler {
 
                 }
 
-                //       partitioning[h.get(val.split(",")[0])].write(newlabel);
-                //     partitioning[h.get(val.split(",")[0])].newLine();
+                partitioning[h.get(val.split(",")[0])].write(newlabel);
+                partitioning[h.get(val.split(",")[0])].newLine();
+
 //                if (mapValue.containsKey(Integer.parseInt(label[1]))) {
 ////                    fstream = new FileWriter(loc + File.separator + val.split(",")[0] + "_value.txt", true);
 ////                    BufferedWriter vout = new BufferedWriter(fstream);
@@ -212,24 +218,25 @@ public class IntervalLabelling extends DefaultHandler {
 
             xmlString = result.getWriter().toString();
 
-            //  File f = new File(FXMLDocumentController.AnswerPath + "\\UniqueNodes.xml");
-            //   FileWriter output = null;
-            //  f.createNewFile();
-            //   output = new FileWriter(f.getAbsoluteFile(), false);
-            //   output.write(xmlString);
-            //    output.close();
-            //  out.get(0).close();
-            // out.get(1).close();
-            // out.get(2).close();
-//            for (int i = 0; i < partitioning.length; i++) {
-            //          partitioning[i].close();
-            //        }
+            File f = new File(FXMLDocumentController.AnswerPath + "\\UniqueNodes.xml");
+            FileWriter output = null;
+            f.createNewFile();
+            output = new FileWriter(f.getAbsoluteFile(), false);
+            output.write(xmlString);
+            output.close();
+            out.get(0).close();
+            out.get(1).close();
+            out.get(2).close();
+
+            for (int i = 0; i < partitioning.length; i++) {
+                partitioning[i].close();
+            }
             dataBaseManger.st.close();
             dataBaseManger.con.close();
 
             detali[0] = totalElement;
             detali[1] = totalatt;
-            detali[2] = (uniqueNode.size());
+            detali[2] = (partitioning.length + up.size());
         } catch (Exception e) {
 
             e.printStackTrace();
@@ -274,9 +281,9 @@ public class IntervalLabelling extends DefaultHandler {
             tags.put(qName, (Integer) pNum.pop());
 
             try {
-                //   out.get(1).write(qName + "," + tags.get(qName) + comma + "0");
-                //   out.get(1).newLine();
-            } catch (Exception e) {
+                out.get(1).write(qName + "," + tags.get(qName) + comma + "0");
+                out.get(1).newLine();
+            } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
@@ -316,10 +323,10 @@ public class IntervalLabelling extends DefaultHandler {
                 map.put(OrderStack.peek(), attributes.getQName(i) + "," + OrderStack.peek() + "," + OrderStack.peek() + ","
                         + (LevelStack.peek() + 1));
                 try {
-//                    out.get(2).write(l + ":" + attributes.getValue(i));
-                    //                out.get(2).newLine();
+                    out.get(2).write(l + ":" + attributes.getValue(i));
+                    out.get(2).newLine();
                     mapValue.put(OrderStack.peek(), l + comma + attributes.getValue(i));
-                } catch (Exception e1) {
+                } catch (IOException e1) {
                     // TODO Auto-generated catch block
                     e1.printStackTrace();
                 }
@@ -327,9 +334,9 @@ public class IntervalLabelling extends DefaultHandler {
                 if (!tagsAttribute.containsKey(attributes.getQName(i))) {
                     tagsAttribute.put(attributes.getQName(i), (Integer) pNumAtt.pop());
                     try {
-                        //      out.get(1).write(attributes.getQName(i) + "," + tagsAttribute.get(attributes.getQName(i)) + comma + "1");
-                        //     out.get(1).newLine();
-                    } catch (Exception e) {
+                        out.get(1).write(attributes.getQName(i) + "," + tagsAttribute.get(attributes.getQName(i)) + comma + "1");
+                        out.get(1).newLine();
+                    } catch (IOException e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
@@ -434,12 +441,12 @@ public class IntervalLabelling extends DefaultHandler {
 
                 }
                 v = v.trim();
-                //    out.get(2).write(txtLabel[1] + comma + txtLabel[2] + comma + txtLabel[3] + ":" + v);
-                //    out.get(2).newLine();
+                out.get(2).write(txtLabel[1] + comma + txtLabel[2] + comma + txtLabel[3] + ":" + v);
+                out.get(2).newLine();
                 mapValue.put(OrderStack.peek(), txtLabel[1] + comma + txtLabel[2] + comma + txtLabel[3] + comma + v);
                 dataBaseManger.insertData(qName, txtLabel[1], txtLabel[2], txtLabel[3], v, pathID);
                 values.clear();
-            } catch (Exception e) {
+            } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }

@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package DataBase;
+package newpackage;
 
+import DataBase.*;
 import Parsing.IntervalLabelling;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -15,7 +16,6 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import Main.FXMLDocumentController;
-import java.util.Arrays;
 import java.util.HashMap;
 import org.apache.commons.lang3.StringUtils;
 
@@ -96,8 +96,7 @@ public class DataBaseManger {
             //get the last elemnt form the query
             String table = query[query.length - 1];
             //first part of the query
-            String sql = "select [value]  from " + table + " where pathID = " + pathID;
-            System.out.println(sql);
+            String sql = "select [value]  from " + table;
             //query the database
             ResultSet rs = st.executeQuery(sql);
             //get all the result the match the condtion
@@ -122,10 +121,8 @@ public class DataBaseManger {
             ArrayList<String> res = new ArrayList<String>();
             String sql = "";
             String table = "";
-            int index = Arrays.binarySearch(query, father);
-
             //select part of query
-            for (int i = index; i < query.length; i++) {
+            for (int i = 1; i < query.length; i++) {
                 table = query[i];
                 //we have where
                 if (whereMap.get(table) != null) {
@@ -145,7 +142,7 @@ public class DataBaseManger {
             }
 
             //where part of the query
-            for (int i = index; i < query.length; i++) {
+            for (int i = 1; i < query.length; i++) {
                 if (!father.equals(query[i])) {
                     if (i == query.length - 1) {
                         sql = sql + " " + father + ".start < " + query[i] + ".start and " + father + ".finish > " + query[i] + ".finish ";

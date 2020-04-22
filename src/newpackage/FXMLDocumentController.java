@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Main;
+package newpackage;
 
+import Main.*;
 import DataBase.DataBaseManger;
 import Models.NodeCounter;
 import Parsing.IntervalLabelling;
@@ -15,9 +16,7 @@ import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -118,8 +117,8 @@ public class FXMLDocumentController implements Initializable {
     private ProgressIndicator p;
 
     Task<Void> task;
-    public static String DatabasePath;
-    public static String AnswerPath;
+    public static String DatabasePath = "";
+    public static String AnswerPath = "";
     public Document Uniquedoc;
     public ArrayList<String> UniPaths;
     private HashMap<String, String> whereMap;
@@ -169,24 +168,6 @@ public class FXMLDocumentController implements Initializable {
 
     @FXML
     public void startProggres(ActionEvent event) {
-        if (DatabasePath.isEmpty()) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.initStyle(StageStyle.UTILITY);
-            alert.setHeaderText(null);
-            alert.setTitle("ERROR");
-            alert.setContentText("Please upload  XML Database");
-            alert.showAndWait();
-            return;
-        }
-        if (AnswerPath.isEmpty()) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.initStyle(StageStyle.UTILITY);
-            alert.setHeaderText(null);
-            alert.setTitle("ERROR");
-            alert.setContentText("Please choose output folder");
-            alert.showAndWait();
-            return;
-        }
         p.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
         task = new Task<Void>() {
             @Override
@@ -367,7 +348,6 @@ public class FXMLDocumentController implements Initializable {
         ArrayList<String> res = null;
 
         if (whereMap != null) {
-            System.out.println(whereMap);
             res = db.query(arr, UniPaths.indexOf(orgQuery), whereMap, father);
         } else {
             res = db.query(arr, UniPaths.indexOf(query));
@@ -398,7 +378,24 @@ public class FXMLDocumentController implements Initializable {
 
     @FXML
     void stopTheProgram(ActionEvent event) {
-
+        if (DatabasePath.isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.initStyle(StageStyle.UTILITY);
+            alert.setHeaderText(null);
+            alert.setTitle("ERROR");
+            alert.setContentText("Please upload  XML Database");
+            alert.showAndWait();
+            return;
+        }
+        if (AnswerPath.isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.initStyle(StageStyle.UTILITY);
+            alert.setHeaderText(null);
+            alert.setTitle("ERROR");
+            alert.setContentText("Please choose output folder");
+            alert.showAndWait();
+            return;
+        }
         p.setProgress(0);
         time.setText("Execution Stopped");
         StatisticsTab.setDisable(true);
@@ -418,7 +415,6 @@ public class FXMLDocumentController implements Initializable {
 
         }
         whereMap.put(tag, operator);
-
         return tag;
     }
 
